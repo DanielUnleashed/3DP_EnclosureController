@@ -19,6 +19,9 @@ class Display{
 
     void renderDisplay(void* menuManager);
 
+    // When true, rotating the encoder will select diferent elements inside the display.
+    bool traversingWidgetMode = true;
+
     uint16_t x, y;
     uint16_t width, height;
     uint8_t tileCountX, tileCountY;

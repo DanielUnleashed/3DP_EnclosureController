@@ -26,6 +26,8 @@ class TemperatureSensor{
 
     private:
     dht DHT;
+    bool dhtDown = false;
+
     uint8_t dhtPin;
     uint8_t tmp36Pin;
 

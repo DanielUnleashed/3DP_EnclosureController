@@ -14,6 +14,10 @@ RotEncoder::RotEncoder(uint8_t a, uint8_t b){
     lastState = digitalRead(chA) | (digitalRead(chB) << 1);
 }
 
+bool RotEncoder::pollState(){
+    return rotEncoderState=updateState();
+}
+
 bool RotEncoder::updateState(){
     bool ret = false;
     uint8_t currentPinState = digitalRead(chA) | (digitalRead(chB) << 1);
@@ -30,6 +34,6 @@ bool RotEncoder::updateState(){
 }
 
 int8_t RotEncoder::getIncrement(){
-    if(!updateState()) return 0;
-    return increment;
+    //if(!updateState()) return 0;
+    return rotEncoderState ? increment : 0;
 }

@@ -18,6 +18,8 @@ class ButtonInput{
 
         uint8_t pin;
 
+        bool pollState();
+
         bool clicked();
         bool isPressed();
         bool released(); 
@@ -36,6 +38,7 @@ class ButtonInput{
 
         /*Updates the state of the button. Returns true if the state has changed. */
         bool updateState();
+        bool buttonPollState = false;
 };
 
 #endif

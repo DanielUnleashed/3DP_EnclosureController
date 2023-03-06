@@ -7,7 +7,7 @@ TemperatureSensor::TemperatureSensor(uint8_t dht, uint8_t tmp36){
 }
 
 double TemperatureSensor::getTemperature(){
-    return (tmpTemp+dhtTemp)/2.0;
+    return dhtDown ? tmpTemp : (tmpTemp+dhtTemp)/2.0;
 }
 
 double TemperatureSensor::getHumidity(){
@@ -56,6 +56,7 @@ void TemperatureSensor::update(){
     tmpTemp = (max+temp)/2.0;
 
     int chk = DHT.read11(dhtPin);
+    dhtDown = chk!=DHTLIB_OK;
     if(chk == DHTLIB_OK){
         dhtTemp = DHT.temperature;
         humidity = DHT.humidity;

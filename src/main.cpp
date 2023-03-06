@@ -8,6 +8,7 @@
 #include "UI/GUI/DisplayItems/HumidityWidget.h"
 #include "UI/GUI/DisplayItems/FanWidget.h"
 #include "UI/GUI/DisplayItems/LEDWidget.h"
+#include "UI/GUI/DisplayItems/GraphWidget.h"
 
 #define DHT11_PIN PD2
 #define TMP36_PIN A7
@@ -26,8 +27,11 @@ TemperatureSensor tmp(DHT11_PIN, TMP36_PIN);
 FanController fans(FAN_PIN, &tmp);
 LEDController leds(RED_PIN, GREEN_PIN, BLUE_PIN);
 
+GraphWidget tempGraph(0,0,6,4);
+GraphWidget humidityGraph(0,0,6,4);
+
 MenuManager menu;
-TemperatureWidget tmpWidget(0,0, &tmp);
+TemperatureWidget tmpWidget(0,0, &tmp, &tempGraph);
 HumidityWidget hmWidget(3,0, &tmp);
 FanWidget fanWidget(0,2, &fans);
 LEDWidget ledWidget(3,2, &leds);
@@ -60,6 +64,9 @@ void loop(){
     if(fans.update()){
       fanWidget.redraw();
     }
+
+    tempGraph.addPoint(tmp.getTemperature());
+    humidityGraph.addPoint(tmp.getHumidity());
 
     tmpWidget.redraw();
     hmWidget.redraw();

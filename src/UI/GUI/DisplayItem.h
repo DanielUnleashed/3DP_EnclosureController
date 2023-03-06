@@ -17,6 +17,7 @@ class DisplayItem {
 
     DisplayItem(uint8_t x, uint8_t y, uint8_t sX, uint8_t sY);
     virtual void draw(void* menuManager) = 0;
+    virtual void handleInput(void* menuManager);
 
     bool needsUpdate = true;
     void redraw();
@@ -35,6 +36,7 @@ class DisplayItem {
     void drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t fillColor);
     //void drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t colorA, uint16_t colorB, bool drawHorizontal);
     
+    void drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint16_t color);
     void drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint16_t color);
     void drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint8_t width, uint16_t color);
     void drawVLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint16_t color);

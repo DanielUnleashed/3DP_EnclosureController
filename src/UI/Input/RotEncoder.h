@@ -10,6 +10,8 @@ class RotEncoder{
         RotEncoder(uint8_t chA, uint8_t chB);
 
         int8_t getIncrement();
+        // Return true if there's any input
+        bool pollState();
 
     private:
         uint32_t lastTimeChange = 0;
@@ -18,6 +20,7 @@ class RotEncoder{
         uint8_t chA, chB; //Pins
 
         bool updateState();
+        bool rotEncoderState = false;
 };
 
 #endif

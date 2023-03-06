@@ -2,6 +2,11 @@
 
 ButtonInput::ButtonInput(uint8_t pin){
     this->pin = pin;
+    pinMode(this->pin, INPUT);
+}
+
+bool ButtonInput::pollState(){
+    return buttonPollState=updateState();
 }
 
 bool ButtonInput::updateState(){
@@ -46,22 +51,21 @@ bool ButtonInput::clicked(){
     // If the state hasn't been updated, then it returns false so that the code that comes
     // after this, doesn't execute.
     // Click is only called once per press.
-    return updateState() && buttonState==CLICK;
+    return buttonPollState && buttonState==CLICK;
 }
 
 bool ButtonInput::isPressed(){
-    updateState();
     return buttonState == CLICK;
 }
 
 bool ButtonInput::released(){
-    return updateState() && buttonState == RELEASED;
+    return buttonPollState && buttonState == RELEASED;
 }
 
 bool ButtonInput::clicked(uint8_t timesPressed){
-    return updateState() && (buttonState==MULTIPLE_CLICK || (repeatedPressesCount >= timesPressed));
+    return buttonPollState && (buttonState==MULTIPLE_CLICK || (repeatedPressesCount >= timesPressed));
 }
 
 bool ButtonInput::doubleClicked(){
-    return updateState() && (buttonState==MULTIPLE_CLICK || (repeatedPressesCount > 1));
+    return buttonPollState && (buttonState==MULTIPLE_CLICK || (repeatedPressesCount > 1));
 }

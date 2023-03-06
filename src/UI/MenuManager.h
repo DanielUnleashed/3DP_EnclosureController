@@ -13,8 +13,13 @@
 
 #define ROT_CHA A4
 #define ROT_CHB A5
+#define ROT_BUTTON A2
 
 #define MENU_MANAGER_MAX_DISPLAY 2
+
+#define INPUT_NONE 0
+#define INPUT_BUTTON_CLICK 1
+#define INPUT_ROTARY 2
 
 class MenuManager{
 
@@ -25,19 +30,19 @@ class MenuManager{
     // Updates the inputs first, and then decides if it is necessary to update the graphics.
     void update();
 
-    void drawTask();
-    void redrawAll();
-
     // Inputs (all stored in the MenuManager object)
     Adafruit_ST7735* tft;
     RotEncoder* rot;
     ButtonInput* but;
 
+    // Input state
+    uint8_t inputCode = INPUT_NONE;
+
     Display displayList[MENU_MANAGER_MAX_DISPLAY];
     uint8_t displayCount = 0;
     uint8_t currentDisplay = 0;
 
-    bool addDisplay(Display display);
+    bool addDisplay(Display &display);
     Display* getCurrentDisplay();
 
 };

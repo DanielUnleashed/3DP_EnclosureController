@@ -1,4 +1,5 @@
 #include "Display.h"
+#include "UI/MenuManager.h"
 
 Display::Display(uint8_t x, uint8_t y, uint16_t width, uint16_t height, uint8_t tileCountX, uint8_t tileCountY){
     this->x = x;
@@ -9,7 +10,6 @@ Display::Display(uint8_t x, uint8_t y, uint16_t width, uint16_t height, uint8_t 
     this->tileCountY = tileCountY;
     calculateTileSize();
 }
-
 
 bool Display::addItem(DisplayItem* item){
     if(itemCount >= DISPLAY_MAX_ELEMENTS) return false;
@@ -33,13 +33,23 @@ int8_t Display::findItem(DisplayItem* item){
 }
 
 void Display::renderDisplay(void* menuManager){
+    MenuManager* m = (MenuManager*) menuManager;
+    if(traversingWidgetMode && m->inputCode == INPUT_ROTARY){
+        updateSelection(m->rot->getIncrement() > 0);
+        redrawAll();
+        m->inputCode = INPUT_NONE; // Disable so the selected item doesn't do anything funky.
+    }else if(m->inputCode != INPUT_NONE){
+        items[selectedItem]->handleInput(menuManager);
+    }
+
     items[selectedItem]->isSelected = true;
     for(uint8_t i = 0; i < itemCount; i++){
         if(items[i]->needsUpdate){
             items[i]->needsUpdate = false;
             items[i]->draw(menuManager);
-            if(selectedItem == i){
-                items[i]->drawRectangle(menuManager, 0,0,100,100, 0xfec5); // Cool yellow
+
+            if(selectedItem==i){
+                items[i]->drawRectangle(menuManager, 0,0,100,100, 0xfec5); // Cool yellow (?)
             }            
         }
 
@@ -64,7 +74,7 @@ void Display::calculateTileSize(){
     }else{
         tileSize = desiredTileSizeY;
     }
-    Serial.println("TileSize: " + String(tileSize));
+    //Serial.println("TileSize: " + String(tileSize));
 
     // Recalculate padding to fix rounding errors
     uint16_t xError = width - tileCountX*tileSize;

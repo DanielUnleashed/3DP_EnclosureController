@@ -30,6 +30,8 @@ void DisplayItem::redraw(){
     this->needsUpdate = true;
 }
 
+void DisplayItem::handleInput(void* menuManager){}
+
 uint16_t DisplayItem::createColor(uint8_t r, uint8_t g, uint8_t b){
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 }
@@ -96,6 +98,14 @@ void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint
     if(drawHorizontal) m->tft->fillRectHGradient(transP.x, transP.y, lx, ly, colorA, colorB);
     else m->tft->fillRectVGradient(transP.x, transP.y, lx, ly, colorA, colorB);
 }*/
+
+void DisplayItem::drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint16_t color){
+    MenuManager* m = (MenuManager*) menuManager;
+    Point transO = transformRelativePoint(m->getCurrentDisplay(), oX, oY);
+    Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
+
+    m->tft->drawLine(transO.x, transO.y, transP.x, transP.y, color);
+}
 
 void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint16_t color){
     MenuManager* m = (MenuManager*) menuManager;
