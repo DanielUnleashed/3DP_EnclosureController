@@ -44,6 +44,10 @@ class MenuManager{
 
     bool addDisplay(Display &display);
     Display* getCurrentDisplay();
+    void returnToLastDisplay();
+
+    private:
+    bool petitionToReturnToLastDisplay = false;
 
 };
 

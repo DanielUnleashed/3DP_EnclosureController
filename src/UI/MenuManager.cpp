@@ -16,9 +16,21 @@ void MenuManager::init(uint8_t CSpin, uint8_t DCpin, uint8_t RESETpin) {
 
 void MenuManager::update() {
   inputCode = INPUT_NONE;
-  if(but->pollState()) inputCode = INPUT_BUTTON_CLICK;
   if(rot->pollState()) inputCode = INPUT_ROTARY;
+  if(but->pollState()){
+    if(but->clicked()) inputCode = INPUT_BUTTON_CLICK;
+  }
   
+  if(petitionToReturnToLastDisplay){
+    petitionToReturnToLastDisplay = false;
+    
+    Serial.println("Return to last screen");
+    tft->fillScreen(0x0000);
+    currentDisplay--;
+    displayCount--;
+    Serial.println(displayList[currentDisplay].redrawAll());
+  }
+
   displayList[currentDisplay].renderDisplay(this);
 }
 
@@ -33,4 +45,9 @@ bool MenuManager::addDisplay(Display &display){
 
 Display* MenuManager::getCurrentDisplay(){
   return &displayList[currentDisplay];
+}
+
+void MenuManager::returnToLastDisplay(){
+  if(currentDisplay == 0) return;
+  petitionToReturnToLastDisplay = true;
 }

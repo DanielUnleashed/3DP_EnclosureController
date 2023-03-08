@@ -1,13 +1,13 @@
 #include "Display.h"
 #include "UI/MenuManager.h"
 
-Display::Display(uint8_t x, uint8_t y, uint16_t width, uint16_t height, uint8_t tileCountX, uint8_t tileCountY){
+Display::Display(uint8_t tileCountX, uint8_t tileCountY, uint8_t x, uint8_t y, uint16_t width, uint16_t height){
+    this->tileCountX = tileCountX;
+    this->tileCountY = tileCountY;
     this->x = x;
     this->y = y;
     this->width = width;
     this->height = height;
-    this->tileCountX = tileCountX;
-    this->tileCountY = tileCountY;
     calculateTileSize();
 }
 
@@ -37,29 +37,29 @@ void Display::renderDisplay(void* menuManager){
     if(traversingWidgetMode && m->inputCode == INPUT_ROTARY){
         updateSelection(m->rot->getIncrement() > 0);
         redrawAll();
-        m->inputCode = INPUT_NONE; // Disable so the selected item doesn't do anything funky.
     }else if(m->inputCode != INPUT_NONE){
         items[selectedItem]->handleInput(menuManager);
     }
+    m->inputCode = INPUT_NONE; // Disable so the selected item doesn't do anything funky.
 
-    items[selectedItem]->isSelected = true;
     for(uint8_t i = 0; i < itemCount; i++){
         if(items[i]->needsUpdate){
             items[i]->needsUpdate = false;
             items[i]->draw(menuManager);
 
-            if(selectedItem==i){
-                items[i]->drawRectangle(menuManager, 0,0,100,100, 0xfec5); // Cool yellow (?)
+            if(selectedItem==i && items[i]->drawItemSelectedSquare){
+                items[i]->drawRectangle(menuManager, 0,0,100,100, 0xfcc40c); // Cool yellow (?)
             }            
         }
 
     }
 }
 
-void Display::redrawAll(){
+uint8_t Display::redrawAll(){
     for(DisplayItem* d : items){
         d->redraw();
     }
+    return itemCount;
 }
 
 void Display::calculateTileSize(){
@@ -102,6 +102,7 @@ void Display::calculateTileSize(){
 }
 
 void Display::updateSelection(bool increment){
+    items[selectedItem]->isSelected = false;
     uint8_t innerSelection = items[selectedItem]->selectedElementIndex;
     if(increment){
         if(innerSelection == items[selectedItem]->selectableCount-1){
@@ -119,5 +120,12 @@ void Display::updateSelection(bool increment){
             items[selectedItem]->selectedElementIndex--;
         }
     }
+    items[selectedItem]->isSelected = true;
+}
 
+#include "UI/GUI/DisplayItems/DisplayHeader.h"
+
+HeadedDisplay::HeadedDisplay(String displayName, uint8_t tileCountX, uint8_t tileCountY, uint8_t x, uint8_t y, uint16_t width, uint16_t height) : Display(tileCountX, tileCountY,x,y,width,height){
+    this->header = new DisplayHeader(displayName, tileCountX);
+    addItem(header);
 }

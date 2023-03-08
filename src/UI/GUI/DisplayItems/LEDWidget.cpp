@@ -10,12 +10,16 @@ void LEDWidget::draw(void* menuManager){
 
     if(now - lastDrawTime > LED_REFRESH_INTERVAL){
         lastDrawTime = now;
-        uint16_t c = createColor(led->currentColor.r, led->currentColor.g, led->currentColor.b);
-        drawFilledRect(menuManager, 0, 0, 100, 100, c);
-        drawRectangle(menuManager,  0, 0, 100, 100, 0x9b79);
 
-        drawCenteredText(menuManager, 50, 25, "LED", 1, 0xFFFF);
-        drawCenteredText(menuManager, 50, 60, String(led->brightness) + " %", 2, 0xFFFF);        
+        uint32_t r = led->currentColor.r;
+        uint32_t g = led->currentColor.g;
+        uint32_t b = led->currentColor.b;
+        uint32_t c = (r<<16) | (g<<8) | b;
+        drawFilledRect(menuManager, 0, 0, 100, 100, c);
+        drawRectangle(menuManager,  0, 0, 100, 100, 0x4c6ed3);
+
+        drawText(menuManager, 50, 25, "LED", 1, 0xFFFFFF, TEXT_CC);
+        drawText(menuManager, 50, 60, String(led->brightness) + " %", 2, 0xFFFFFF, TEXT_CC);        
     }
 
 }

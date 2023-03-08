@@ -5,14 +5,14 @@ HumidityWidget::HumidityWidget(uint8_t x, uint8_t y, TemperatureSensor* tmp) : D
 }
 
 void HumidityWidget::draw(void* menuManager){
-    drawFilledRect(menuManager, 0, 0, 100, 100, 0x3949);
-    drawRectangle(menuManager,  0, 0, 100, 100, 0x9b79);
+    drawFilledRect(menuManager, 0, 0, 100, 100, 0x263a75);
+    drawRectangle(menuManager,  0, 0, 100, 100, 0x4c6ed3);
 
     String hmdStr = String(tmp->getHumidity());
     uint8_t dotPosition = hmdStr.indexOf('.');
     hmdStr = hmdStr.substring(0, dotPosition);
     hmdStr += " %";
 
-    drawCenteredText(menuManager, 50, 25, "Humedad", 1, 0xFFFF);
-    drawCenteredText(menuManager, 50, 60, hmdStr, 2, 0xFFFF);
+    drawText(menuManager, 50, 25, "Humedad", 1, 0xFFFFFF, TEXT_CC);
+    drawText(menuManager, 50, 60, hmdStr, 2, 0xFFFFFF, TEXT_CC);
 }

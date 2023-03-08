@@ -7,23 +7,22 @@ TemperatureWidget::TemperatureWidget(uint8_t x, uint8_t y, TemperatureSensor* tm
 }
 
 void TemperatureWidget::draw(void* menuManager){
-    drawFilledRect(menuManager, 0, 0, 100, 100, 0x3949);
-    drawRectangle(menuManager,  0, 0, 100, 100, 0x9b79);
+    drawFilledRect(menuManager, 0, 0, 100, 100, 0x263a75);
+    drawRectangle(menuManager,  0, 0, 100, 100, 0x4c6ed3);
 
     String tmpStr = String(tmp->getTemperature());
     uint8_t dotPosition = tmpStr.indexOf('.');
     tmpStr = tmpStr.substring(0, dotPosition+2);
     tmpStr += " C";
 
-    drawCenteredText(menuManager, 50, 25, "Temperatura", 1, 0xFFFF);
-    drawCenteredText(menuManager, 50, 60, tmpStr, 2, 0xFFFF);
+    drawText(menuManager, 50, 25, "Temperatura", 1, 0xFFFFFF, TEXT_CC);
+    drawText(menuManager, 50, 60, tmpStr, 2, 0xFFFFFF, TEXT_CC);
 }
 
 void TemperatureWidget::handleInput(void* menuManager){
     MenuManager* m = (MenuManager*) menuManager;
-    Serial.println(m->inputCode);
     if(m->inputCode == INPUT_BUTTON_CLICK){
-        Display d = Display();
+        HeadedDisplay d = HeadedDisplay("Temperatura", 6,5);
         d.addItem(graph);
         m->addDisplay(d);
     }

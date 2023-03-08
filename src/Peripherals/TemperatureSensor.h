@@ -7,7 +7,7 @@
 #define TMP_ITERATIONS 5  // Number of samplings for the TMP36 measurement
 #define TMP_ITER_TIME 250   // Interval between TMP36 sampling iterations
 
-#define TMP_UPDATE_INTERVAL 7000 // Interval between temperature updates
+#define TMP_UPDATE_INTERVAL 10000 // Interval between temperature updates
 
 class TemperatureSensor{
 
@@ -33,7 +33,7 @@ class TemperatureSensor{
 
     uint32_t lastUpdateTime = 0;
     bool currentlySampling = false;
-    bool dataHasBeenRead = false;
+    bool dataHasBeenRead = true;
 
     double dhtTemp;
     double humidity;

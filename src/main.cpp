@@ -27,8 +27,8 @@ TemperatureSensor tmp(DHT11_PIN, TMP36_PIN);
 FanController fans(FAN_PIN, &tmp);
 LEDController leds(RED_PIN, GREEN_PIN, BLUE_PIN);
 
-GraphWidget tempGraph(0,0,6,4);
-GraphWidget humidityGraph(0,0,6,4);
+GraphWidget tempGraph(0,1,6,4);
+GraphWidget humidityGraph(0,1,6,4);
 
 MenuManager menu;
 TemperatureWidget tmpWidget(0,0, &tmp, &tempGraph);
@@ -54,11 +54,11 @@ void setup(){
 long lastTimer = 0;
 
 void loop(){
-  tmp.update();
   if(leds.update()){
     ledWidget.redraw();
   }
 
+  tmp.update();
   if(tmp.dataReady()){
     tmp.printValues();
     if(fans.update()){

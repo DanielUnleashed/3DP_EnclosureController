@@ -8,7 +8,7 @@
 
 class Display{
     public:
-    Display(uint8_t x = 0, uint8_t y = 0, uint16_t width = 160, uint16_t height = 128, uint8_t tileCountX = 6, uint8_t tileCountY = 4);
+    Display(uint8_t tileCountX = 6, uint8_t tileCountY = 4, uint8_t x = 0, uint8_t y = 0, uint16_t width = 160, uint16_t height = 128);
 
     DisplayItem* items[DISPLAY_MAX_ELEMENTS];
     uint8_t itemCount = 0;
@@ -33,7 +33,7 @@ class Display{
 
     uint16_t tileSize;
 
-    void redrawAll();
+    uint8_t redrawAll();
 
     private:
     void calculateTileSize();
@@ -43,6 +43,12 @@ class Display{
     uint8_t selectedItem = 0;   // The item being selected
     void updateSelection(bool increment);
 
+};
+
+class HeadedDisplay : public Display {
+    public:
+    HeadedDisplay(String displayName, uint8_t tileCountX = 6, uint8_t tileCountY = 4, uint8_t x = 0, uint8_t y = 0, uint16_t width = 160, uint16_t height = 128);
+    DisplayItem* header;
 };
 
 #endif

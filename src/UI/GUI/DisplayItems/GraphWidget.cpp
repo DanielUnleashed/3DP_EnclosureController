@@ -1,40 +1,64 @@
 #include "GraphWidget.h"
 
-GraphWidget::GraphWidget(uint8_t x, uint8_t y, uint8_t sizeX, uint8_t sizeY) : DisplayItem(x,y,sizeX,sizeY){}
+GraphWidget::GraphWidget(uint8_t x, uint8_t y, uint8_t sizeX, uint8_t sizeY) : DisplayItem(x,y,sizeX,sizeY){
+    startX = GRAPH_PAD_X;
+    startY = 6; // Top padding
+    graphWidth = 100 - startX - 2;
+    graphHeight = 100 - startY - GRAPH_PAD_Y; 
+}
 
 void GraphWidget::draw(void* menuManager){
+    drawFilledRect(menuManager, 0,0,100,100,0xafb5ce);
+    
     // Canvas for the graph with some passing from the border
-    drawFilledRect(menuManager, 4,4, 92, 92, 0xFFFF);   // White background
+    drawFilledRect(menuManager, startX,startY, graphWidth, graphHeight, 0xFFFFFF);   // White background
+
+    // Draw grid
+    for(uint8_t i = 0; i <= GRAPH_X_DIVISIONS; i++){
+        drawVLine(menuManager, startX + graphWidth*i/GRAPH_X_DIVISIONS, startY, graphHeight, 0x4c6ed3);
+    }
+
+    for(uint8_t i = 0; i <= GRAPH_Y_DIVISIONS; i++){
+        uint16_t yC = startY+graphHeight*i/GRAPH_Y_DIVISIONS;
+        drawHLine(menuManager, startX, yC, graphWidth, 0x4c6ed3);
+        
+        double lineVal = maxValue + (minValue-maxValue)*i/GRAPH_Y_DIVISIONS;
+        int v = lineVal;
+        drawText(menuManager, startX, yC, String(v), 1, 0x000000, TEXT_RC);
+    }
+
+    if(lastPointIndex == 0xFF) return;  // No points have been added
 
     // Draw the plot line
-    const uint8_t totalPlotCount = dataPointsIsFull ? GRAPH_RECORD_SIZE : lastPointIndex;
-    if(dataPointsIsFull){
-        drawGraphSegment(menuManager, lastPointIndex+1, GRAPH_RECORD_SIZE-1,  0,                                totalPlotCount);
-        // Set deltaIndex to the number of points that have already been drawn
-        drawGraphSegment(menuManager, 0,                lastPointIndex,   GRAPH_RECORD_SIZE-lastPointIndex-1,   totalPlotCount);
+    const uint8_t totalLinePlotCount = dataPointsIsFull ? GRAPH_RECORD_SIZE-1 : lastPointIndex;
+
+    uint16_t lastX = startX;
+    uint16_t lastY;
+    uint8_t deltaIndex = 0;
+    if(dataPointsIsFull && lastPointIndex!=GRAPH_RECORD_SIZE-1){
+        lastY = lerpYCoord(dataPoints[lastPointIndex+1]);
+
+        drawGraphSegment(menuManager, lastPointIndex+1, GRAPH_RECORD_SIZE-1,    deltaIndex, totalLinePlotCount, lastX, lastY);
+        drawGraphSegment(menuManager, 0xFF /*trickery*/,  lastPointIndex,         deltaIndex, totalLinePlotCount, lastX, lastY);
     }else{
-        drawGraphSegment(menuManager, 0,                lastPointIndex,     0,                                  totalPlotCount);
+        lastY = lerpYCoord(dataPoints[0]);
+        drawGraphSegment(menuManager, 0,                lastPointIndex,         deltaIndex, totalLinePlotCount, lastX, lastY);
     }
 }
 
-void GraphWidget::drawGraphSegment(void* menuManager, uint8_t firstIndex, uint8_t lastIndex, uint8_t deltaIndex, const uint8_t totalPlotCount){
+void GraphWidget::drawGraphSegment(void* menuManager, uint8_t firstIndex, uint8_t lastIndex, uint8_t &deltaIndex, const uint8_t totalLinePlotCount, uint16_t &lastX, uint16_t &lastY){
     if(firstIndex == lastIndex) return;
 
-    Serial.println("Max " + String(maxValue) + ", Min " + String(minValue));
-
-    uint16_t lastX = 5;
-    uint16_t lastY = lerpYCoord(dataPoints[firstIndex]);
-    uint8_t counter = deltaIndex+1;
+    Serial.println("1st " + String(firstIndex) + ", Last " + String(lastIndex));
     
     // Firstly draw the passed points
     for(uint8_t i = firstIndex+1; i <= lastIndex; i++){
-        uint16_t x = 5 + counter*90/totalPlotCount;
-        counter++;
-        
+        deltaIndex++;
+        uint16_t x = startX + deltaIndex*graphWidth/totalLinePlotCount;
         uint16_t y = lerpYCoord(dataPoints[i]);
 
-        Serial.println("("+String(lastX)+"," + String(lastY) + ")  -> ("+String(x)+"," + String(y)+")  Temp: " + String(dataPoints[i]));
-        drawLine(menuManager, lastX, lastY, x, y, ST77XX_RED);
+        Serial.println("("+String(lastX)+"," + String(lastY) + ")  -> ("+String(x)+"," + String(y)+")  Temp: " + String(dataPoints[i]) + " ind: " + String(deltaIndex));
+        drawLine(menuManager, lastX, lastY, x, y, 0xef2828);    // Red line
         lastX = x;
         lastY = y;
     }
@@ -42,7 +66,7 @@ void GraphWidget::drawGraphSegment(void* menuManager, uint8_t firstIndex, uint8_
 
 uint16_t GraphWidget::lerpYCoord(double data){
     // Lineal interpolation between 5% -> maxVal, x% -> arrayValue, and 90% -> minVal
-    return 5 + 85*(data - maxValue)/(minValue - maxValue);
+    return startY + (graphHeight-startY)*(data - maxValue)/(minValue - maxValue);
 }
 
 void GraphWidget::addPoint(double data){
@@ -50,10 +74,21 @@ void GraphWidget::addPoint(double data){
     if(lastPointIndex == GRAPH_RECORD_SIZE){
         dataPointsIsFull = true;
         lastPointIndex = 0;
+        Serial.println("Loop back");
     }
     dataPoints[lastPointIndex] = data;
 
-    if(data > maxValue) maxValue = data;
-    if(data < minValue) minValue = data;
+    // Maximum and minimum points have to be calculated every time, because the last index can sometimes
+    // be removed.
+    maxValue = dataPoints[0];
+    minValue = dataPoints[0];
+    for(uint8_t i = 1; i < (dataPointsIsFull ? GRAPH_RECORD_SIZE : lastPointIndex); i++){
+        if(dataPoints[i] > maxValue) maxValue = dataPoints[i];
+        else if(dataPoints[i] < minValue) minValue = dataPoints[i];
+    }
+    // Little trick to give some padding to the top and bottom parts of the graph
+    maxValue += 2;
+    minValue -= 2;
+    if(minValue < 0) minValue = 0;
     redraw();
 }
