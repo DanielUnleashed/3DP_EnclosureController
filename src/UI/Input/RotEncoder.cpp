@@ -1,11 +1,5 @@
 #include "RotEncoder.h"
 
-const int8_t ROTATION_DIRECTION[16] = {
-            0,  -1,   1,  0,
-            1,   0,   0, -1,
-           -1,   0,   0,  1,
-            0,   1,  -1,  0};
-
 RotEncoder::RotEncoder(uint8_t a, uint8_t b){
     this->chA = a;
     this->chB = b;
@@ -13,7 +7,6 @@ RotEncoder::RotEncoder(uint8_t a, uint8_t b){
     pinMode(chA, INPUT_PULLUP);
     pinMode(chB, INPUT);
     pinMode(chB, INPUT_PULLUP);
-    lastState = digitalRead(chA) | (digitalRead(chB) << 1);
 }
 
 bool RotEncoder::pollState(){
@@ -36,9 +29,8 @@ bool RotEncoder::pollState(){
 }*/
 
 bool RotEncoder::updateState(){
-  static int8_t rot_enc_table[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0};
-  static uint8_t prevNextCode = 0;
-static uint16_t store=0;
+  //static int8_t rot_enc_table[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0};
+  static uint16_t rot_enc_table = 0b0110100110010110; //Stored backwards (but it's symetrical)
 
   prevNextCode <<= 2;
   if (digitalRead(chA)) prevNextCode |= 0x02;
@@ -46,7 +38,7 @@ static uint16_t store=0;
   prevNextCode &= 0x0f;
 
    // If valid then store as 16 bit data.
-   if  (rot_enc_table[prevNextCode] ) {
+   if ((rot_enc_table>>prevNextCode) & 0x0001) {
       store <<= 4;
       store |= prevNextCode;
       //if (store==0xd42b) return 1;

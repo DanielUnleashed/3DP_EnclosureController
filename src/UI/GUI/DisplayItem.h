@@ -2,7 +2,7 @@
 #define DISPLAY_ITEM_h
 
 #include "Arduino.h"
-#include <Adafruit_ST7735.h>
+#include <TFT.h>
 
 struct Point{
     uint16_t x, y;
@@ -32,10 +32,9 @@ class DisplayItem {
     uint16_t createColor(uint8_t r, uint8_t g, uint8_t b);
 
     //General draw functions
+    void calculateRectangleData(void* m, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t &color, Point &transP, uint16_t &lx, uint16_t &ly);
     void drawRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
     void drawRoundRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
-    void drawRectangleByCenter(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
-    void drawRoundRectangleByCenter(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
 
     void drawRoundFilledRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
     void drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);

@@ -3,15 +3,13 @@
 MenuManager::MenuManager(){}
 
 void MenuManager::init(uint8_t CSpin, uint8_t DCpin, uint8_t RESETpin) {
-  tft = new Adafruit_ST7735 (CSpin, DCpin, RESETpin);
+  tft = new TFT(CSpin, DCpin, RESETpin);
   rot = new RotEncoder(ROT_CHA, ROT_CHB);
   but = new ButtonInput(ROT_BUTTON);
 
-  tft->initR(INITR_BLACKTAB);
+  tft->begin();
   tft->setRotation(1);
-  tft->fillScreen(ST7735_BLACK);
-
-  tft->setSPISpeed(8e6);
+  tft->fillScreen(0x0000);
 }
 
 void MenuManager::update() {

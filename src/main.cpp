@@ -4,9 +4,7 @@
 #include "Peripherals/LEDController.h"
 
 #include "UI/MenuManager.h"
-#include "UI/GUI/DisplayItems/TemperatureWidget.h"
-#include "UI/GUI/DisplayItems/HumidityWidget.h"
-#include "UI/GUI/DisplayItems/FanWidget.h"
+#include "UI/GUI/DisplayItems/DataWidget.h"
 #include "UI/GUI/DisplayItems/LEDWidget.h"
 #include "UI/GUI/DisplayItems/GraphWidget.h"
 
@@ -31,9 +29,9 @@ GraphWidget tempGraph(0,1,6,4);
 GraphWidget humidityGraph(0,1,6,4);
 
 MenuManager menu;
-TemperatureWidget tmpWidget(0,0, &tmp, &tempGraph);
-HumidityWidget hmWidget(3,0, &tmp);
-FanWidget fanWidget(0,2, &fans);
+DataWidget tmpWidget("Temperatura", 0,0, &tempGraph);
+DataWidget hmWidget("Humedad", 3,0, &humidityGraph);
+DataWidget fanWidget("Ventiladores", 0,2);
 LEDWidget ledWidget(3,2, &leds);
 
 void setup(){
@@ -62,14 +60,14 @@ void loop(){
   if(tmp.dataReady()){
     tmp.printValues();
     if(fans.update()){
-      fanWidget.redraw();
+      fanWidget.setData(fans.output);
     }
 
     tempGraph.addPoint(tmp.getTemperature());
     humidityGraph.addPoint(tmp.getHumidity());
 
-    tmpWidget.redraw();
-    hmWidget.redraw();
+    tmpWidget.setData(tmp.getTemperature());
+    hmWidget.setData(tmp.getHumidity());
   }
   menu.update();
   delay(1);

@@ -2,9 +2,7 @@
 #define MENU_MANAGER_h
 
 #include "Arduino.h"
-// include TFT and SPI libraries
-#include <Adafruit_ST7735.h>
-#include <SPI.h>
+#include <TFT.h>
 
 #include "UI/GUI/Display.h"
 
@@ -31,7 +29,7 @@ class MenuManager{
     void update();
 
     // Inputs (all stored in the MenuManager object)
-    Adafruit_ST7735* tft;
+    TFT* tft;
     RotEncoder* rot;
     ButtonInput* but;
 

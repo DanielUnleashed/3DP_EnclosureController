@@ -14,8 +14,9 @@ class RotEncoder{
         bool pollState();
 
     private:
-        uint32_t lastTimeChange = 0;
-        uint8_t lastState = 0;
+        uint8_t prevNextCode = 0;
+        uint16_t store = 0;
+        
         int8_t increment = 0;
         uint8_t chA, chB; //Pins
 
