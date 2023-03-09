@@ -94,14 +94,14 @@ void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint
     else m->tft->fillRectVGradient(transP.x, transP.y, lx, ly, colorA, colorB);
 }*/
 
-void DisplayItem::drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint32_t color){
+void DisplayItem::drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint32_t color, uint8_t lineW){
     MenuManager* m = (MenuManager*) menuManager;
     Point transO = transformRelativePoint(m->getCurrentDisplay(), oX, oY);
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
 
     color = createColor(color>>16, color>>8, color);
 
-    m->tft->drawLine(transO.x, transO.y, transP.x, transP.y, color);
+    m->tft->drawLine(transO.x, transO.y, transP.x, transP.y, color, lineW);
 }
 
 void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint32_t color){

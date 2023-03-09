@@ -58,7 +58,7 @@ void GraphWidget::drawGraphSegment(void* menuManager, uint8_t firstIndex, uint8_
         uint16_t y = lerpYCoord(dataPoints[i]);
 
         Serial.println("("+String(lastX)+"," + String(lastY) + ")  -> ("+String(x)+"," + String(y)+")  Temp: " + String(dataPoints[i]) + " ind: " + String(deltaIndex));
-        drawLine(menuManager, lastX, lastY, x, y, 0xef2828);    // Red line
+        drawLine(menuManager, lastX, lastY, x, y, 0xef2828, 2);    // Red line
         lastX = x;
         lastY = y;
     }
@@ -74,7 +74,6 @@ void GraphWidget::addPoint(double data){
     if(lastPointIndex == GRAPH_RECORD_SIZE){
         dataPointsIsFull = true;
         lastPointIndex = 0;
-        Serial.println("Loop back");
     }
     dataPoints[lastPointIndex] = data;
 

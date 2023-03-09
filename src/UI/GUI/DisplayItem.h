@@ -40,7 +40,7 @@ class DisplayItem {
     void drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color);
     //void drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t colorA, uint32_t colorB, bool drawHorizontal);
     
-    void drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint32_t color);
+    void drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint32_t color, uint8_t lineWidth = 1);
     void drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint32_t color);
     void drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint8_t width, uint32_t color);
     void drawVLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint32_t color);

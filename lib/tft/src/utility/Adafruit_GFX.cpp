@@ -163,7 +163,7 @@ void Adafruit_GFX::fillCircleHelper(int16_t x0, int16_t y0, int16_t r,
 // Bresenham's algorithm - thx wikpedia
 void Adafruit_GFX::drawLine(int16_t x0, int16_t y0, 
 			    int16_t x1, int16_t y1, 
-			    uint16_t color) 
+			    uint16_t color, uint8_t lineWidth) 
 {
   int16_t steep = abs(y1 - y0) > abs(x1 - x0);
   if (steep) {
@@ -189,11 +189,14 @@ void Adafruit_GFX::drawLine(int16_t x0, int16_t y0,
     ystep = -1;
   }
 
-  for (; x0<=x1; x0++) {
+  x1-=lineWidth;
+  for (; x0<=x1; x0+=lineWidth) {
     if (steep) {
-      drawPixel(y0, x0, color);
+      if(lineWidth <= 1) drawPixel(y0, x0, color);
+      else fillRect(y0,x0, lineWidth, lineWidth, color);
     } else {
-      drawPixel(x0, y0, color);
+      if(lineWidth <= 1) drawPixel(x0, y0, color);
+      else fillRect(x0,y0, lineWidth, lineWidth, color);
     }
     err -= dy;
     if (err < 0) {
@@ -202,7 +205,6 @@ void Adafruit_GFX::drawLine(int16_t x0, int16_t y0,
     }
   }
 }
-
 
 // Draw a rectangle
 void Adafruit_GFX::drawRect(int16_t x, int16_t y,
@@ -406,6 +408,10 @@ void Adafruit_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
      ((x + 6 * size - 1) < 0)	|| // Clip left
      ((y + 8 * size - 1) < 0))     // Clip top
     return;
+
+  // Cap for reduced key-set
+  if(c < ' ' || c > 0x7f) return;
+  c -= ' ';
 
   for (int8_t i=0; i<6; i++ ) {
     uint8_t line;
