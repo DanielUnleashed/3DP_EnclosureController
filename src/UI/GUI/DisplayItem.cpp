@@ -153,24 +153,21 @@ void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String tex
     
     color = createColor(color>>16, color>>8, color);
 
+    if(datum==TEXT_CC || datum==TEXT_LC ||datum==TEXT_RC){
+        transP.y -= 4*size;
+    }
+
     switch (datum) {
     case TEXT_CC:{
         // Every letter is 6 units in X and 8 in Y.
         transP.x -= text.length()*3*size;
-        transP.y -= 4*size;
         break;    
     }
     
-    case TEXT_RC:{
+    case TEXT_RC:
+    case TEXT_TR:{
         // Every letter is 6 units in X and 8 in Y.
         transP.x -= text.length()*6*size;
-        transP.y -= 4*size;
-        break;    
-    }
-
-    case TEXT_LC:{
-        // Every letter is 6 units in X and 8 in Y.
-        transP.y -= 4*size;
         break;    
     }
 

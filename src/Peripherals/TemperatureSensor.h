@@ -7,7 +7,7 @@
 #define TMP_ITERATIONS 5  // Number of samplings for the TMP36 measurement
 #define TMP_ITER_TIME 250   // Interval between TMP36 sampling iterations
 
-#define TMP_UPDATE_INTERVAL 10000 // Interval between temperature updates
+#define TMP_UPDATE_INTERVAL 5000 // Interval between temperature updates
 
 class TemperatureSensor{
 
@@ -22,11 +22,12 @@ class TemperatureSensor{
     // return true once and then it will lock until new data is gained.
     bool dataReady();
 
-    void update();
+    void update(void* menuManager);
+
+    bool dhtDown = false;
 
     private:
     dht DHT;
-    bool dhtDown = false;
 
     uint8_t dhtPin;
     uint8_t tmp36Pin;

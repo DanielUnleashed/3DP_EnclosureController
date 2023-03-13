@@ -12,6 +12,7 @@ struct Point{
 #define TEXT_CC 1   // Text x-centered and y-centered
 #define TEXT_RC 2   // Text right and y-centered 
 #define TEXT_LC 3   // Text left centered
+#define TEXT_TR 4   // Text top, right
 
 class DisplayItem {
     public:

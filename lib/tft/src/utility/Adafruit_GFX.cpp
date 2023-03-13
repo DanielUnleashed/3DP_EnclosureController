@@ -190,7 +190,7 @@ void Adafruit_GFX::drawLine(int16_t x0, int16_t y0,
   }
 
   x1-=lineWidth;
-  for (; x0<=x1; x0+=lineWidth) {
+  for (; x0<=x1; x0++) {
     if (steep) {
       if(lineWidth <= 1) drawPixel(y0, x0, color);
       else fillRect(y0,x0, lineWidth, lineWidth, color);

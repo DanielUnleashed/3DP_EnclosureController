@@ -9,8 +9,8 @@
 #include "Input/RotEncoder.h"
 #include "Input/ButtonInput.h"
 
-#define ROT_CHA A4
-#define ROT_CHB A5
+#define ROT_CHA A0
+#define ROT_CHB A1
 #define ROT_BUTTON A2
 
 #define MENU_MANAGER_MAX_DISPLAY 2
@@ -18,6 +18,8 @@
 #define INPUT_NONE 0
 #define INPUT_BUTTON_CLICK 1
 #define INPUT_ROTARY 2
+
+#define MENU_MANAGER_WARNING_TIME 10000
 
 class MenuManager{
 
@@ -43,6 +45,10 @@ class MenuManager{
     bool addDisplay(Display &display);
     Display* getCurrentDisplay();
     void returnToLastDisplay();
+
+    uint32_t lastWarningTime = 0;
+    String warningMessage;
+    void showWarningMessage(String str);
 
     private:
     bool petitionToReturnToLastDisplay = false;

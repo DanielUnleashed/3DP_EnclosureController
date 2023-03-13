@@ -17,7 +17,7 @@
 #define A0_PIN PD7 //aka. DC pin
 #define RS_PIN 8
 
-#define RED_PIN   PB1
+#define RED_PIN   9
 #define GREEN_PIN PD6 
 #define BLUE_PIN  PD5
 
@@ -56,9 +56,10 @@ void loop(){
     ledWidget.redraw();
   }
 
-  tmp.update();
+  tmp.update(&menu);
   if(tmp.dataReady()){
     tmp.printValues();
+
     if(fans.update()){
       fanWidget.setData(fans.output);
     }

@@ -30,6 +30,18 @@ void MenuManager::update() {
   }
 
   displayList[currentDisplay].renderDisplay(this);
+
+  if(lastWarningTime == 1){
+    lastWarningTime = millis();
+    tft->fillRect(0,119,160,9, 0x7FF); //Yellow
+    tft->setTextColor(0x0000);
+    tft->setCursor(1, 120);
+    tft->setTextSize(1);
+    tft->print(warningMessage);
+  }else if(lastWarningTime != 0 && millis()-lastWarningTime >= MENU_MANAGER_WARNING_TIME){
+    lastWarningTime = 0;
+    tft->fillRect(0,120,160,8, 0x0000);
+  }
 }
 
 bool MenuManager::addDisplay(Display &display){
@@ -48,4 +60,9 @@ Display* MenuManager::getCurrentDisplay(){
 void MenuManager::returnToLastDisplay(){
   if(currentDisplay == 0) return;
   petitionToReturnToLastDisplay = true;
+}
+
+void MenuManager::showWarningMessage(String str){
+  lastWarningTime = 1;
+  warningMessage = str;
 }

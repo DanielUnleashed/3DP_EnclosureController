@@ -44,6 +44,9 @@ void GraphWidget::draw(void* menuManager){
         lastY = lerpYCoord(dataPoints[0]);
         drawGraphSegment(menuManager, 0,                lastPointIndex,         deltaIndex, totalLinePlotCount, lastX, lastY);
     }
+
+    // Draw the last measure in the top right corner
+    drawText(menuManager, 98, startY+2, String(dataPoints[lastPointIndex]), 1, 0x000000, TEXT_TR);
 }
 
 void GraphWidget::drawGraphSegment(void* menuManager, uint8_t firstIndex, uint8_t lastIndex, uint8_t &deltaIndex, const uint8_t totalLinePlotCount, uint16_t &lastX, uint16_t &lastY){
