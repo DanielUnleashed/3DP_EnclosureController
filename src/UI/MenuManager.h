@@ -2,17 +2,15 @@
 #define MENU_MANAGER_h
 
 #include "Arduino.h"
-// include TFT and SPI libraries
-#include <Adafruit_ST7735.h>
-#include <SPI.h>
+#include <TFT.h>
 
 #include "UI/GUI/Display.h"
 
 #include "Input/RotEncoder.h"
 #include "Input/ButtonInput.h"
 
-#define ROT_CHA A4
-#define ROT_CHB A5
+#define ROT_CHA A0
+#define ROT_CHB A1
 #define ROT_BUTTON A2
 
 #define MENU_MANAGER_MAX_DISPLAY 2
@@ -20,6 +18,8 @@
 #define INPUT_NONE 0
 #define INPUT_BUTTON_CLICK 1
 #define INPUT_ROTARY 2
+
+#define MENU_MANAGER_WARNING_TIME 10000
 
 class MenuManager{
 
@@ -31,7 +31,7 @@ class MenuManager{
     void update();
 
     // Inputs (all stored in the MenuManager object)
-    Adafruit_ST7735* tft;
+    TFT* tft;
     RotEncoder* rot;
     ButtonInput* but;
 
@@ -44,6 +44,14 @@ class MenuManager{
 
     bool addDisplay(Display &display);
     Display* getCurrentDisplay();
+    void returnToLastDisplay();
+
+    uint32_t lastWarningTime = 0;
+    String warningMessage;
+    void showWarningMessage(String str);
+
+    private:
+    bool petitionToReturnToLastDisplay = false;
 
 };
 

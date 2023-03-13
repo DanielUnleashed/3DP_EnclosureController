@@ -1,4 +1,5 @@
 #include "TemperatureSensor.h"
+#include "UI/MenuManager.h"
 
 TemperatureSensor::TemperatureSensor(uint8_t dht, uint8_t tmp36){
     this->dhtPin = dht;
@@ -28,7 +29,7 @@ void TemperatureSensor::printValues(){
     Serial.println(getHumidity());
 }
 
-void TemperatureSensor::update(){
+void TemperatureSensor::update(void* menuManager){
     uint32_t now = millis();
     if(now-lastUpdateTime < TMP_UPDATE_INTERVAL) return;    // Sensor update every TMP_UPDATE_INTERVAL
     currentlySampling = true;
@@ -61,7 +62,10 @@ void TemperatureSensor::update(){
         dhtTemp = DHT.temperature;
         humidity = DHT.humidity;
     }else{
-        Serial.println("ERROR READING DHT");
+        const String str = "ERROR READING DHT";
+        Serial.println(str);
+        MenuManager* m = (MenuManager*) menuManager;
+        m->showWarningMessage(str);
     }
 
     currentlySampling = false;

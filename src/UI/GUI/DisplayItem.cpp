@@ -33,63 +33,58 @@ void DisplayItem::redraw(){
 void DisplayItem::handleInput(void* menuManager){}
 
 uint16_t DisplayItem::createColor(uint8_t r, uint8_t g, uint8_t b){
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+    return ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3);
 }
 
 // ***** DRAW FUNCTIONS *****
-void DisplayItem::drawRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t color){
+void DisplayItem::drawRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     uint16_t lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
     uint16_t ly = sizeY*m->getCurrentDisplay()->tileSize*sY/100;
+
+    color = createColor(color>>16, color>>8, color);
 
     m->tft->drawRect(transP.x, transP.y, lx, ly, color);
 }
 
-void DisplayItem::drawRoundRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t color){
+void DisplayItem::calculateRectangleData(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t &color, Point &transP, uint16_t &lx, uint16_t &ly){
     MenuManager* m = (MenuManager*) menuManager;
-    Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
-    uint16_t lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
-    uint16_t ly = sizeY*m->getCurrentDisplay()->tileSize*sY/100;
+    transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
+    lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
+    ly = sizeY*m->getCurrentDisplay()->tileSize*sY/100;
 
+    color = createColor(color>>16, color>>8, color);
+}
+
+void DisplayItem::drawRoundRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color){
+    Point transP;
+    uint16_t lx, ly;
+    calculateRectangleData(menuManager, pX, pY, sX, sY, color, transP, lx, ly);
+
+    MenuManager* m = (MenuManager*) menuManager;
     m->tft->drawRoundRect(transP.x, transP.y, lx, ly, 4, color);
 }
 
-void DisplayItem::drawRectangleByCenter(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t color){
+void DisplayItem::drawRoundFilledRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color){
+    Point transP;
+    uint16_t lx, ly;
+    calculateRectangleData(menuManager, pX, pY, sX, sY, color, transP, lx, ly);
+
     MenuManager* m = (MenuManager*) menuManager;
-    Point centerP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
-    Point transP = {centerP.x - sX/2, centerP.y - sY/2};
-
-    m->tft->drawRect(transP.x, transP.y, sX, sY, color);
-}
-
-void DisplayItem::drawRoundRectangleByCenter(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t color){
-    MenuManager* m = (MenuManager*) menuManager;
-    Point centerP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
-    Point transP = {centerP.x - sX/2, centerP.y - sY/2};
-    
-    m->tft->drawRoundRect(transP.x, transP.y, sX, sY, 4, color);
-}
-
-void DisplayItem::drawRoundFilledRectangle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t color){
-    MenuManager* m = (MenuManager*) menuManager;
-    Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
-    uint16_t lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
-    uint16_t ly = sizeY*m->getCurrentDisplay()->tileSize*sY/100;
-
     m->tft->fillRoundRect(transP.x, transP.y, lx, ly, 4, color);
 }
 
-void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t fillColor){
-    MenuManager* m = (MenuManager*) menuManager;
-    Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
-    uint16_t lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
-    uint16_t ly = sizeY*m->getCurrentDisplay()->tileSize*sY/100;
+void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t color){
+    Point transP;
+    uint16_t lx, ly;
+    calculateRectangleData(menuManager, pX, pY, sX, sY, color, transP, lx, ly);
 
-    m->tft->fillRect(transP.x, transP.y, lx, ly, fillColor);
+    MenuManager* m = (MenuManager*) menuManager;
+    m->tft->fillRect(transP.x, transP.y, lx, ly, color);
 }
 
-/*void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint16_t colorA, uint16_t colorB, bool drawHorizontal){
+/*void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint8_t sX, uint8_t sY, uint32_t colorA, uint32_t colorB, bool drawHorizontal){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     uint16_t lx = sizeX*m->getCurrentDisplay()->tileSize*sX/100;
@@ -99,25 +94,33 @@ void DisplayItem::drawFilledRect(void* menuManager, uint8_t pX, uint8_t pY, uint
     else m->tft->fillRectVGradient(transP.x, transP.y, lx, ly, colorA, colorB);
 }*/
 
-void DisplayItem::drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint16_t color){
+void DisplayItem::drawLine(void* menuManager, uint8_t oX, uint8_t oY, uint8_t pX, uint8_t pY, uint32_t color, uint8_t lineW){
     MenuManager* m = (MenuManager*) menuManager;
     Point transO = transformRelativePoint(m->getCurrentDisplay(), oX, oY);
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
 
-    m->tft->drawLine(transO.x, transO.y, transP.x, transP.y, color);
+    color = createColor(color>>16, color>>8, color);
+
+    m->tft->drawLine(transO.x, transO.y, transP.x, transP.y, color, lineW);
 }
 
-void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint16_t color){
+void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     uint16_t l = sizeX*m->getCurrentDisplay()->tileSize*length/100;
+
+    color = createColor(color>>16, color>>8, color);
+
     m->tft->drawFastHLine(transP.x, transP.y, l, color);
 }
 
-void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint8_t width, uint16_t color){
+void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint8_t width, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     uint16_t l = sizeX*m->getCurrentDisplay()->tileSize*length/100;
+
+    color = createColor(color>>16, color>>8, color);
+
     m->tft->drawFastHLine(transP.x, transP.y, l, color);
     for(uint8_t i = 0; i < width; i++){
         m->tft->drawFastHLine(transP.x, transP.y-i, l, color);
@@ -125,14 +128,17 @@ void DisplayItem::drawHLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t l
     }
 }
 
-void DisplayItem::drawVLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint16_t color){
+void DisplayItem::drawVLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t length, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     uint16_t l = sizeY*m->getCurrentDisplay()->tileSize*length/100;
+
+    color = createColor(color>>16, color>>8, color);
+
     m->tft->drawFastVLine(transP.x, transP.y, l, color);
 }
 
-/*void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String text, uint8_t datum, uint8_t size, uint16_t color){
+/*void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String text, uint8_t datum, uint8_t size, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     m->tft->setTextColor(color);
@@ -141,9 +147,35 @@ void DisplayItem::drawVLine(void* menuManager, uint8_t pX, uint8_t pY, uint8_t l
     m->tft->text(text.c_str(), transP.x, transP.y);
 }*/
 
-void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String text, uint8_t size, uint16_t color){
+void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String text, uint8_t size, uint32_t color, uint8_t datum){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
+    
+    color = createColor(color>>16, color>>8, color);
+
+    if(datum==TEXT_CC || datum==TEXT_LC ||datum==TEXT_RC){
+        transP.y -= 4*size;
+    }
+
+    switch (datum) {
+    case TEXT_CC:{
+        // Every letter is 6 units in X and 8 in Y.
+        transP.x -= text.length()*3*size;
+        break;    
+    }
+    
+    case TEXT_RC:
+    case TEXT_TR:{
+        // Every letter is 6 units in X and 8 in Y.
+        transP.x -= text.length()*6*size;
+        break;    
+    }
+
+    case TEXT_TL:
+    default:
+        break;
+    }
+
     m->tft->setTextColor(color);
     //canvas->setTextDatum(TL_DATUM); //TL_DATUM, TB_DATUM...
     m->tft->setTextSize(size);
@@ -151,36 +183,28 @@ void DisplayItem::drawText(void* menuManager, uint8_t pX, uint8_t pY, String tex
     m->tft->print(text);
 }
 
-void DisplayItem::drawCenteredText(void* menuManager, uint8_t pX, uint8_t pY, String text, uint8_t size, uint16_t color){
+void DisplayItem::drawCircumference(void* menuManager, uint8_t pX, uint8_t pY, uint8_t radius, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
 
-    // Every letter is 6 units in X and 8 in Y.
-    transP.x -= text.length()*3*size;
-    transP.y -= 4*size;
+    color = createColor(color>>16, color>>8, color);
 
-    m->tft->setTextColor(color);
-    //canvas->setTextDatum(TL_DATUM); //TL_DATUM, TB_DATUM...
-    m->tft->setTextSize(size);
-    m->tft->setCursor(transP.x, transP.y);
-    m->tft->print(text);
-}
-
-void DisplayItem::drawCircumference(void* menuManager, uint8_t pX, uint8_t pY, uint8_t radius, uint16_t color){
-    MenuManager* m = (MenuManager*) menuManager;
-    Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
     m->tft->drawCircle(transP.x, transP.y, radius, color);
 }
 
-void DisplayItem::drawCircle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t radius, uint16_t color){
+void DisplayItem::drawCircle(void* menuManager, uint8_t pX, uint8_t pY, uint8_t radius, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Point transP = transformRelativePoint(m->getCurrentDisplay(), pX, pY);
+
+    color = createColor(color>>16, color>>8, color);
+
     m->tft->fillCircle(transP.x, transP.y, radius, color);
 }
 
-void DisplayItem::drawGrid(void* menuManager, uint16_t color){
+void DisplayItem::drawGrid(void* menuManager, uint32_t color){
     MenuManager* m = (MenuManager*) menuManager;
     Display* d = m->getCurrentDisplay();
+
     // Draw tile squares.
     m->tft->drawRect(d->x+d->padLeft, d->y+d->padTop, d->tileSize*d->tileCountX, d->tileSize*d->tileCountY, color);
     //Line 0 has already been drawn.
@@ -190,7 +214,7 @@ void DisplayItem::drawGrid(void* menuManager, uint16_t color){
         m->tft->drawFastVLine(d->x+d->padLeft+i*d->tileSize, d->y+d->padTop, d->tileSize*d->tileCountY, color);
 }
 
-void DisplayItem::fillTile(void* menuManager, uint8_t x, uint8_t y, uint16_t color){
+void DisplayItem::fillTile(void* menuManager, uint8_t x, uint8_t y, uint32_t color){
     const uint8_t lineSeparation = 4;
     MenuManager* m = (MenuManager*) menuManager;
     uint16_t tileSize = m->getCurrentDisplay()->tileSize;
