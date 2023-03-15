@@ -9,6 +9,8 @@ FanController::FanController(uint8_t fanPin, TemperatureSensor* tmp){
 }
 
 bool FanController::update(){
+  return false;
+  /*
   bool out = tmp->getHumidity() > 50 || tmp->getTemperature() > 25;
   bool statusChanged = out!=fanOn;
   digitalWrite(fanPin, out);
@@ -19,5 +21,6 @@ bool FanController::update(){
     output = 0;
   }
   return statusChanged;
+  */
 }
 

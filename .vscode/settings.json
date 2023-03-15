@@ -1,4 +1,8 @@
 {
     "C_Cpp.errorSquiggles": "enabled",
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "java_utils\\lib\\JSerialComm.jar"
+    ]
 }

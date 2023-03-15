@@ -22,10 +22,12 @@ bool TemperatureSensor::dataReady(){
 }
 
 void TemperatureSensor::printValues(){
-    Serial.print("Temperature = ");
+    Serial.print("Time= ");
+    Serial.print(lastUpdateTime);
+    Serial.print(" Temp= ");
     Serial.print(getTemperature());
-    Serial.print(" (DHT: " + String(dhtTemp) + ", TMP: " + String(tmpTemp) + ")");
-    Serial.print("   Humidity = ");
+    Serial.print(" (DHT= " + String(dhtTemp) + ", TMP= " + String(tmpTemp) + ")");
+    Serial.print(" Humidity= ");
     Serial.println(getHumidity());
 }
 
