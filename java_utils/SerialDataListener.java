@@ -1,6 +1,5 @@
 package java_utils;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,16 +12,7 @@ public class SerialDataListener extends Thread{
     public static boolean exitThread = false;
     public static FileWriter csvFile;
 
-    public void run(){
-        Scanner sc = new Scanner(System.in);
-        while(true){
-            if(!sc.hasNext()) continue;
-            
-            if(sc.nextByte() == 'q' || sc.nextByte() == 'Q') break;
-        }
-        exitThread = true;
-        sc.close();
-    }
+    public static String fileName;
 
     public static void main (String[] args) {
         System.out.println("Available devices: ");
@@ -57,10 +47,9 @@ public class SerialDataListener extends Thread{
         thread.start();*/
 
         try {
-            File f = new File(".\\data.csv");
-            f.delete();
-            csvFile = new FileWriter(".\\data.csv");
-            csvFile.write("Time,Temp,DHT,TMP,Humidity\n");
+            fileName = ".\\data_"+ System.currentTimeMillis() +".csv";
+            csvFile = new FileWriter(fileName);
+            csvFile.write("Time,Temp,DHT,TMP,Humidity,DHT_Check\n");
             csvFile.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,11 +81,15 @@ public class SerialDataListener extends Thread{
         String tempStr = input.substring(input.indexOf("Temp=")+6, input.indexOf(" (DHT"));
         String dhtStr = input.substring(input.indexOf("DHT=")+5, input.indexOf(", TMP"));
         String tmpStr = input.substring(input.indexOf("TMP= ")+5, input.indexOf(") Humidity"));
-        String humidityStr = input.substring(input.indexOf("Humidity= ")+10);
+        String humidityStr = input.substring(input.indexOf("Humidity= ")+10, input.indexOf(" CheckDHT="));
+        String checkDHT = input.substring(input.indexOf("CheckDHT= ")+10);
 
-        String csvString = timeStr+","+tempStr+","+dhtStr+","+tmpStr+","+humidityStr;
+        String csvString = timeStr+";"+tempStr+";"+dhtStr+";"+tmpStr+";"+humidityStr+";"+checkDHT;
+        for(int i = 0; i < csvString.length(); i++){
+            if(csvString.charAt(i) == '.') csvString = csvString.substring(0, i) + ',' + csvString.substring(i+1);
+        }
         try {
-            csvFile = new FileWriter(".\\data.csv", true);
+            csvFile = new FileWriter(fileName, true);
             csvFile.append(csvString);
             System.out.println(csvString);
             csvFile.close();

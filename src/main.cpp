@@ -37,6 +37,8 @@ LEDWidget ledWidget(3,2, &leds);
 void setup(){
   Serial.begin(9600);
 
+  tmp.begin();
+
   menu.init(CS_PIN, A0_PIN, RS_PIN);
   Display mainD = Display();
   mainD.addItem(&tmpWidget);

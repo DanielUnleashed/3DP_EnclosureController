@@ -40,7 +40,7 @@ void MenuManager::update() {
     tft->print(warningMessage);
   }else if(lastWarningTime != 0 && millis()-lastWarningTime >= MENU_MANAGER_WARNING_TIME){
     lastWarningTime = 0;
-    tft->fillRect(0,120,160,8, 0x0000);
+    tft->fillRect(0,119,160,9, 0x0000);
   }
 }
 
