@@ -14,6 +14,7 @@ class LEDController{
     uint8_t pinR, pinG, pinB;
 
     Color currentColor;
+    bool ledsOn = true;
     uint8_t brightness = 100;
 
     // Pattern
@@ -22,6 +23,7 @@ class LEDController{
     uint8_t selectedPattern = LED_SINE;
     uint8_t speed = 10;
     
+    void switchState(bool on);
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     // Returns true if the color has been updated
     bool update();

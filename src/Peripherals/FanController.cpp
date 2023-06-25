@@ -9,18 +9,22 @@ FanController::FanController(uint8_t fanPin, TemperatureSensor* tmp){
 }
 
 bool FanController::update(){
-  return false;
-  /*
-  bool out = tmp->getHumidity() > 50 || tmp->getTemperature() > 25;
-  bool statusChanged = out!=fanOn;
-  digitalWrite(fanPin, out);
-  fanOn = out;
-  if(fanOn){
-    output = 100;
-  }else{
-    output = 0;
-  }
-  return statusChanged;
-  */
+  bool startingState = output>0;
+  if(fansEnabled){
+    bool out;
+    if(output>0 && tmp->getTemperature() < FAN_LOW_TEMP){
+      out = false;
+    }else if(output==0 && tmp->getTemperature() > FAN_HIGH_TEMP){
+      out = true;
+    }else{
+      out = output>0;
+    }
+
+    digitalWrite(fanPin, out);
+    output = out ? 100 : 0;
+  } // else...
+
+  digitalWrite(fanPin, LOW);
+  return digitalRead(fanPin)!=startingState;
 }
 

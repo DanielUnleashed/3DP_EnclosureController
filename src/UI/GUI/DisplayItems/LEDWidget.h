@@ -14,6 +14,7 @@ class LEDWidget : public DisplayItem{
     LEDController* led;
 
     void draw(void* menuManager) override;
+    void handleInput(void* menuManager) override;
 };
 
 #endif

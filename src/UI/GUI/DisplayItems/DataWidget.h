@@ -2,7 +2,6 @@
 #define DATA_WIDGET_h
 
 #include "UI/GUI/DisplayItem.h"
-#include "Peripherals/TemperatureSensor.h"
 #include "UI/GUI/DisplayItems/GraphWidget.h"
 
 class DataWidget : public DisplayItem{

@@ -7,6 +7,7 @@
 #include "UI/GUI/DisplayItems/DataWidget.h"
 #include "UI/GUI/DisplayItems/LEDWidget.h"
 #include "UI/GUI/DisplayItems/GraphWidget.h"
+#include "UI/GUI/DisplayItems/FanWidget.h"
 
 #define DHT11_PIN PD2
 #define TMP36_PIN A7
@@ -29,9 +30,9 @@ GraphWidget tempGraph(0,1,6,4);
 GraphWidget humidityGraph(0,1,6,4);
 
 MenuManager menu;
-DataWidget tmpWidget("Temperatura", 0,0, &tempGraph);
-DataWidget hmWidget("Humedad", 3,0, &humidityGraph);
-DataWidget fanWidget("Ventiladores", 0,2);
+DataWidget tmpWidget("Temperatura", 0,0, &tempGraph, 'C');
+DataWidget hmWidget("Humedad", 3,0, &humidityGraph, '%');
+FanWidget fanWidget(0,2, &fans);
 LEDWidget ledWidget(3,2, &leds);
 
 void setup(){
@@ -62,9 +63,7 @@ void loop(){
   if(tmp.dataReady()){
     tmp.printValues();
 
-    if(fans.update()){
-      fanWidget.setData(fans.output);
-    }
+    if(fans.update()) fanWidget.redraw();
 
     tempGraph.addPoint(tmp.getTemperature());
     humidityGraph.addPoint(tmp.getHumidity());
